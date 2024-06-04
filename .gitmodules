@@ -7,3 +7,9 @@
 [submodule "products-ms"]
 	path = products-ms
 	url = https://github.com/Product-Microservices/products-ms.git
+[submodule "payment-ms"]
+	path = payment-ms
+	url = https://github.com/Product-Microservices/payment-ms.git
+[submodule "auth-ms"]
+	path = auth-ms
+	url = https://github.com/Product-Microservices/auth-ms.git

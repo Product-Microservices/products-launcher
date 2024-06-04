@@ -2,6 +2,9 @@ version: '3'
 
 services:
 
+  #======================================
+  # Services
+  #======================================
   orders-db:
     container_name: orders_database
     image: postgres:16.2
@@ -20,39 +23,69 @@ services:
     ports:
       - "8222:8222"
 
+  #======================================
+  # Microservices
+  #======================================
   client-gateway:
-    build: ./client-gateway
+    build: ./client-gateway-ms
     ports:
       - 3000:3000
     volumes:
-      - ./client-gateway/src:/usr/src/app/src
+      - ./client-gateway-ms/src:/usr/src/app/src
     command: npm run start:dev
     environment:
-      - PORT=3000
-      - NATS_SERVERS=nats://docker-nats:4222
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
 
   products-ms:
-    build: ./products
+    build: ./products-ms
     ports:
       - 3001:3001
     volumes:
-      - ./products/src:/usr/src/app/src
+      - ./products-ms/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3001
-      - NATS_SERVERS=nats://docker-nats:4222
+      - NATS_SERVERS=${NATS_SERVERS}
       - DATABASE_URL=file:./dev.db 
       
   orders-ms:
     depends_on:
       - orders-db
-    build: ./orders
+    build: ./orders-ms
     ports:
       - 3002:3002
     volumes:
-      - ./orders/src:/usr/src/app/src
+      - ./orders-ms/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3002
-      - NATS_SERVERS=nats://docker-nats:4222
-      - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb?schema=public       
+      - NATS_SERVERS=${NATS_SERVERS}
+      - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb?schema=public
+
+  payment-ms:
+    build: ./payment-ms
+    ports: 
+      - ${PAYMENT_PORT}:3003
+    volumes:
+      - './payment-ms/src:/usr/src/app/src'
+    command: npm run start:dev
+    environment:
+      - name=value
+      - PORT=${PAYMENT_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
+      - STRIPE_SECRET=${PAYMENT_STRIPE_SECRET}
+      - STRIPE_SUCCESS_URL=${PAYMENT_STRIPE_SUCCESS_URL}
+      - STRIPE_CANCEL_UR=${PAYMENT_STRIPE_CANCEL_UR}
+      - STRIPE_ENDPOINT_SECRET=${PAYMENT_STRIPE_ENDPOINT_SECRET}
+
+  auth-ms:
+    build: ./auth-ms
+    ports:
+      - 3004:3004
+    volumes:
+      - ./auth-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3004
+      - NATS_SERVERS=${NATS_SERVERS}
