@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+
+  nats-server:
+    image: nats-latest
+
+  client-gateway:
+    build:
+      context: ./client-gateway-ms
+      dockerfile: dockerfile.prod
+    image: client-gateway
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=${NATS_SERVERS}
+
+  auth-ms:
+    build:
+      context: ./auth-ms
+      dockerfile: dockerfile.prod
+    image: auth-ms
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=${NATS_SERVERS}      
+      - DATABASE_URL=${AUTH_DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}

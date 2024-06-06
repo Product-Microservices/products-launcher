@@ -89,3 +89,5 @@ services:
     environment:
       - PORT=3004
       - NATS_SERVERS=${NATS_SERVERS}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${AUTH_DATABASE_URL}
