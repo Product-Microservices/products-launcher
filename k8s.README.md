@@ -1,3 +1,19 @@
+# Paso a Paso
+* Crear cuenta de google y activar los 3 meses gratis en gcloud.
+* Habilitar artifacts registry
+* Crear image-registry
+* copiar el path y pegarlo en el gcloudbuild.yml
+* Instalar y login con gcloud
+* Aplicar la configuracion gcloud auth configure-docker northamerica-south1-docker.pkg.dev
+* Habilitar triggers en gcloud.
+* Crear trigger y configurar con github.
+* Otorgar permisos al usuario que dispara el trigger para que puede pushear en el registry
+* Habilitar Kubernete Engine
+* Crear cluster de kubernetes con todo por defecto gke
+* Cuando el cluster este listo entrar y dar click en conectar para obtener el connection string.
+* instalar helm y crear los secrets necesarios.
+
+
 # Helm commands
 
 * Crear configuración `helm create <nombre>`
